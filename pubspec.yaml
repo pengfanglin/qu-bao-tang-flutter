@@ -1,0 +1,32 @@
+name: my_flutter
+description: flutter测试
+version: 1.0.0+1
+environment:
+  sdk: ">=2.1.0 <3.0.0"
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: 0.1.2
+  english_words: 3.1.5
+  #http请求
+  dio: 2.1.3
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_swiper: 1.1.6
+flutter:
+  uses-material-design: true
+  assets:
+  - res/images/icon/find.png
+  - res/images/icon/find_hover.png
+  - res/images/icon/home.png
+  - res/images/icon/home_hover.png
+  - res/images/icon/logo.png
+  - res/images/icon/my.png
+  - res/images/icon/my_hover.png
+  - res/images/icon/order.png
+  - res/images/icon/order_hover.png
+  - res/images/icon/shop_car.png
+  - res/images/icon/shop_car_hover.png
+  - res/images/icon/all_class.png
+  - res/images/hot_sales.png
