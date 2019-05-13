@@ -100,7 +100,7 @@ class BannerState extends State<Banner> {
       });
     }, onError: (e) {
       RequestErrorException exception = (e as RequestErrorException);
-      print('${exception.code},${exception.error}');
+      ToastUtils.show('${exception.code},${exception.error}',context: context);
     });
   }
 
@@ -146,7 +146,7 @@ class GoodsClassState extends State<GoodsClass> {
       });
     }, onError: (e) {
       RequestErrorException exception = (e as RequestErrorException);
-      print('${exception.code},${exception.error}');
+      ToastUtils.show('${exception.code},${exception.error}',context: context);
     });
   }
 
@@ -193,7 +193,7 @@ class HotGoodsState extends State<HotGoods> {
       });
     }, onError: (e) {
       RequestErrorException exception = (e as RequestErrorException);
-      print('${exception.code},${exception.error}');
+      ToastUtils.show('${exception.code},${exception.error}',context: context);
     });
   }
 

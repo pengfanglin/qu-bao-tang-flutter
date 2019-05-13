@@ -1,5 +1,5 @@
 import 'package:my_flutter/utils/api.dart';
-import 'model/goods/home_goods_class_model.dart';
+import 'package:my_flutter/utils/toast_utils.dart';
 import 'model/system_account_model.dart';
 
 main(){
@@ -9,6 +9,6 @@ main(){
   },onError: (e){
         print(e.runtimeType);
         RequestErrorException exception=(e as RequestErrorException);
-        print('${exception.code},${exception.error}');
+        ToastUtils.show('${exception.code},${exception.error}');
   });
 }

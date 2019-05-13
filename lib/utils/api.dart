@@ -11,7 +11,7 @@ class Api {
 
   static Dio init() {
     Dio dio = Dio(BaseOptions(
-      baseUrl: 'http://192.168.0.110:8080/',
+      baseUrl: 'http://qbt.qubaotang.cn/',
         connectTimeout: 1000,
         receiveTimeout: 10000
     ));
