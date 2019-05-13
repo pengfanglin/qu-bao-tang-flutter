@@ -22,7 +22,7 @@ class ToastUtils {
       );
     });
     Overlay.of(context==null?Application.context:context).insert(entry);
-    Future.delayed(Duration(seconds: duration ?? 1)).then((value) {
+    Future.delayed(Duration(seconds: duration ?? 2)).then((value) {
       // 移除层可以通过调用OverlayEntry的remove方法。
       entry.remove();
     });

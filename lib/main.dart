@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:qu_bao_tang/utils/application.dart';
 import 'page/find.dart' show Find;
 import 'page/home.dart' show Home;
 import 'page/my.dart' show My;
@@ -10,6 +11,9 @@ void main() {
   runApp(MaterialApp(
     title: '趣宝堂',
     debugShowCheckedModeBanner: false,
+    theme: ThemeData(
+      primaryColor: Application.themeColor
+    ),
     home: TableMenu(),
     routes: <String,WidgetBuilder>{
       '/search': (_) => Search()

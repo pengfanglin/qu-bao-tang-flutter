@@ -13,18 +13,16 @@ class Search extends StatelessWidget {
           children: <Widget>[
             TopSearch(),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-              child: Text('搜索记录',style: TextStyle(color: Colors.black),)
-            ),
+                padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                child: Text(
+                  '搜索记录',
+                  style: TextStyle(color: Colors.black),
+                )),
             SearchHistory(),
-            Container(
-                padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-                child: Text('热门搜索')
-            ),
+            Container(padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10), child: Text('热门搜索')),
             HotSearch()
           ],
-        )
-    );
+        ));
   }
 }
 
@@ -68,43 +66,38 @@ class SearchHistoryState extends State<SearchHistory> {
     Api.post<List<dynamic>>('user/userSearchHistoryList').then((searchHistoryList) {
       setState(() {
         list = List<Widget>();
-        searchHistoryList.forEach((searchHistory){
+        searchHistoryList.forEach((searchHistory) {
           list.add(GestureDetector(
             onTap: () {
               searchHistoryClick(searchHistory['id']);
             },
             child: Container(
-                height: 40,
                 constraints: BoxConstraints(maxWidth: 150),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Application.themeColor,width: 2),
+                  border: Border.all(color: Application.themeColor, width: 2),
                   borderRadius: BorderRadius.circular(15),
-                ) ,
-                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                child: Text(searchHistory['content'],style: TextStyle(color: Colors.black54,fontSize: 16))
-            ),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                child: Text(searchHistory['content'],softWrap: false,
+                    overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black54, fontSize: 16))),
           ));
         });
       });
     }, onError: (e) {
       RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}',context: context);
+      ToastUtils.show('${exception.code},${exception.error}', context: context);
     });
   }
 
   void searchHistoryClick(id) {
-    ToastUtils.show('$id',context: context);
+    ToastUtils.show('$id', context: context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-      child: Wrap(
-          spacing: 20,
-          runSpacing: 10,
-          children: list
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Wrap(spacing: 20, runSpacing: 10, children: list),
     );
   }
 }
@@ -123,43 +116,42 @@ class HotSearchState extends State<HotSearch> {
     Api.post<List<dynamic>>('user/hostSearchList').then((hotSearchList) {
       setState(() {
         list = List<Widget>();
-        hotSearchList.forEach((hotSearch){
+        hotSearchList.forEach((hotSearch) {
           list.add(GestureDetector(
             onTap: () {
               searchHistoryClick(hotSearch['id']);
             },
             child: Container(
-                height: 40,
                 constraints: BoxConstraints(maxWidth: 150),
                 decoration: BoxDecoration(
-                  border: Border.all(color: Application.themeColor,width: 2),
+                  border: Border.all(color: Application.themeColor, width: 2),
                   borderRadius: BorderRadius.circular(15),
-                ) ,
-                padding: EdgeInsets.symmetric(horizontal: 15,vertical: 5),
-                child: Text(hotSearch['content'],style: TextStyle(color: Colors.black54,fontSize: 16))
-            ),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                child: Text(
+                  hotSearch['content'],
+                  softWrap: false,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(color: Colors.black54, fontSize: 16),
+                )),
           ));
         });
       });
     }, onError: (e) {
       RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}',context: context);
+      ToastUtils.show('${exception.code},${exception.error}', context: context);
     });
   }
 
   void searchHistoryClick(id) {
-    ToastUtils.show('$id',context: context);
+    ToastUtils.show('$id', context: context);
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-      child: Wrap(
-          spacing: 20,
-          runSpacing: 10,
-          children: list
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      child: Wrap(spacing: 20, runSpacing: 10, children: list),
     );
   }
 }

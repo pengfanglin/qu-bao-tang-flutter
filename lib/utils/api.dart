@@ -11,7 +11,8 @@ class Api {
 
   static Dio init() {
     Dio dio = Dio(BaseOptions(
-      baseUrl: 'http://47.101.151.125:666/',
+//        baseUrl: 'http://192.168.0.110:8080/',
+      baseUrl: 'http://qbt.qubaotang.cn/api/',
         connectTimeout: 1000,
         receiveTimeout: 10000
     ));
@@ -82,7 +83,7 @@ class Api {
       }
     }
     if(response==null||response.data==null){
-      return await Future.error(RequestErrorException(0,'返回结果为空'));
+      return await Future.error(RequestErrorException(0,'请求超时'));
     }else {
       if(response.data['status']){
         if(response.data['data']is List<dynamic>){
