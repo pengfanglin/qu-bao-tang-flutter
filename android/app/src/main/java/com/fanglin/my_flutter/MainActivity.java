@@ -1,4 +1,4 @@
-package com.fanglin.my_flutter;
+package com.fanglin.qbt;
 
 import android.os.Bundle;
 import io.flutter.app.FlutterActivity;

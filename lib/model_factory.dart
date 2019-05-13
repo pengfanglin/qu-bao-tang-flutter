@@ -1,5 +1,5 @@
-import 'package:my_flutter/model/goods/home_goods_class_model.dart';
-import 'package:my_flutter/model/system_account_model.dart';
+import 'package:qu_bao_tang/model/goods/home_goods_class_model.dart';
+import 'package:qu_bao_tang/model/system_account_model.dart';
 
 class ModelFactory {
   static T generateOBJ<T>(json) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter/utils/application.dart';
+import 'package:qu_bao_tang/utils/application.dart';
 
 class Button extends FlatButton{
   const Button({

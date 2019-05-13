@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import 'package:my_flutter/page/search.dart';
-import 'package:my_flutter/utils/api.dart';
-import 'package:my_flutter/utils/application.dart';
-import 'package:my_flutter/utils/toast_utils.dart';
+import 'package:qu_bao_tang/page/search.dart';
+import 'package:qu_bao_tang/utils/api.dart';
+import 'package:qu_bao_tang/utils/application.dart';
+import 'package:qu_bao_tang/utils/toast_utils.dart';
 
 class Home extends StatelessWidget {
   @override
@@ -27,7 +27,8 @@ class Home extends StatelessWidget {
 class HotSales extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(height: 60, child: Image.asset('res/images/hot_sales.png'));
+    return Container(
+        height: 60, child: Image.asset('res/images/hot_sales.png'));
   }
 }
 
@@ -41,13 +42,11 @@ class TopSearch extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: GestureDetector(
-          onTap: (){
+          onTap: () {
 //            Navigator.of(context).pushNamed('/search');
-            Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) {
-                  return Search();
-                })
-            );
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+              return Search();
+            }));
           },
           child: Container(
               padding: EdgeInsets.only(left: 10),
@@ -56,11 +55,11 @@ class TopSearch extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: <Widget>[
-                  Icon(Icons.search,color: Colors.black26),
-                  Text('请输入商品名称',style: TextStyle(color: Colors.black38,fontSize: 14))
+                  Icon(Icons.search, color: Colors.black26),
+                  Text('请输入商品名称',
+                      style: TextStyle(color: Colors.black38, fontSize: 14))
                 ],
-              )
-          ),
+              )),
         ),
       ),
     );
@@ -76,7 +75,8 @@ class BannerState extends State<Banner> {
   Swiper swiper = Swiper(
       itemCount: 5,
       itemBuilder: (context, index) {
-        return Image.network(Application.IMG_URL + '/images/others/slider1.jpg', fit: BoxFit.fill);
+        return Image.network(Application.IMG_URL + '/images/others/slider1.jpg',
+            fit: BoxFit.fill);
       });
 
   @override
@@ -92,15 +92,26 @@ class BannerState extends State<Banner> {
               );
             },
             itemCount: bannerList.length,
-            pagination: new SwiperPagination(builder: DotSwiperPaginationBuilder(color: Colors.white, activeColor: Colors.red)),
+            pagination: new SwiperPagination(
+                builder: DotSwiperPaginationBuilder(
+                    color: Colors.white, activeColor: Colors.red)),
             scrollDirection: Axis.horizontal,
             autoplay: true,
             autoplayDelay: 2000,
             onTap: (index) => print('点击了第$index个'));
       });
     }, onError: (e) {
-      RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}',context: context);
+      String content;
+      if (e is NoSuchMethodError) {
+        content = (e as NoSuchMethodError).toString();
+      } else if (e is RequestErrorException) {
+        RequestErrorException exception = (e as RequestErrorException);
+        content = '${exception.code},${exception.error}';
+      } else {
+        content = e.toString();
+      }
+      print(content);
+      ToastUtils.show(content, context: context);
     });
   }
 
@@ -132,7 +143,10 @@ class GoodsClassState extends State<GoodsClass> {
           onTap: () {
             goodsClassClick(0, 0);
           },
-          child: CircleAvatar(radius: 50, backgroundColor: Application.themeColor, backgroundImage: AssetImage('res/images/icon/all_class.png')),
+          child: CircleAvatar(
+              radius: 50,
+              backgroundColor: Application.themeColor,
+              backgroundImage: AssetImage('res/images/icon/all_class.png')),
         ));
         for (int i = 0; i < goodsClassList.length; i++) {
           list.add(GestureDetector(
@@ -140,18 +154,30 @@ class GoodsClassState extends State<GoodsClass> {
               goodsClassClick(i + 1, goodsClassList[i]['classId']);
             },
             child: CircleAvatar(
-                backgroundColor: Colors.greenAccent, radius: 50, backgroundImage: NetworkImage(Application.IMG_URL + goodsClassList[i]['classImg'])),
+                backgroundColor: Colors.greenAccent,
+                radius: 50,
+                backgroundImage: NetworkImage(
+                    Application.IMG_URL + goodsClassList[i]['classImg'])),
           ));
         }
       });
     }, onError: (e) {
-      RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}',context: context);
+      String content;
+      if (e is NoSuchMethodError) {
+        content = (e as NoSuchMethodError).toString();
+      } else if (e is RequestErrorException) {
+        RequestErrorException exception = (e as RequestErrorException);
+        content = '${exception.code},${exception.error}';
+      } else {
+        content = e.toString();
+      }
+      print(content);
+      ToastUtils.show(content, context: context);
     });
   }
 
   void goodsClassClick(index, classId) {
-    ToastUtils.show('$index,$classId',context: context);
+    ToastUtils.show('$index,$classId', context: context);
   }
 
   @override
@@ -192,14 +218,23 @@ class HotGoodsState extends State<HotGoods> {
         });
       });
     }, onError: (e) {
-      RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}',context: context);
+      String content;
+      if (e is NoSuchMethodError) {
+        content = (e as NoSuchMethodError).toString();
+      } else if (e is RequestErrorException) {
+        RequestErrorException exception = (e as RequestErrorException);
+        content = '${exception.code},${exception.error}';
+      } else {
+        content = e.toString();
+      }
+      print(content);
+      ToastUtils.show(content, context: context);
     });
   }
 
   Widget buildItem(dynamic goods) {
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         hotGoodsClick(goods['goodsId']);
       },
       child: ClipRRect(
@@ -218,7 +253,8 @@ class HotGoodsState extends State<HotGoods> {
                   Container(
                     padding: const EdgeInsets.symmetric(vertical: 5),
                     child: Center(
-                      child: Text(goods['name'], style: TextStyle(fontSize: 15)),
+                      child:
+                          Text(goods['name'], style: TextStyle(fontSize: 15)),
                     ),
                   ),
                   Padding(
@@ -226,8 +262,10 @@ class HotGoodsState extends State<HotGoods> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text('￥${goods['minPrice']}', style: TextStyle(color: Colors.red)),
-                        Text('${goods['totalSales']}人付款', style: TextStyle(color: Colors.black54)),
+                        Text('￥${goods['minPrice']}',
+                            style: TextStyle(color: Colors.red)),
+                        Text('${goods['totalSales']}人付款',
+                            style: TextStyle(color: Colors.black54)),
                       ],
                     ),
                   )
@@ -244,8 +282,11 @@ class HotGoodsState extends State<HotGoods> {
       child: GridView(
         shrinkWrap: true,
         physics: new NeverScrollableScrollPhysics(),
-        gridDelegate:
-            SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 5, crossAxisSpacing: 10, childAspectRatio: 2 / 2.5),
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: 5,
+            crossAxisSpacing: 10,
+            childAspectRatio: 2 / 2.9),
         children: list,
       ),
     );

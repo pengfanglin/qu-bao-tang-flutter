@@ -1,14 +1,18 @@
-import 'package:my_flutter/utils/api.dart';
-import 'package:my_flutter/utils/toast_utils.dart';
-import 'model/system_account_model.dart';
+import 'package:qu_bao_tang/utils/api.dart';
 
 main(){
-  Api.post<SystemAccountModel>('goods/homeGoodsClassList')
-      .then((systemAccount){
-    print(systemAccount.username);
-  },onError: (e){
-        print(e.runtimeType);
-        RequestErrorException exception=(e as RequestErrorException);
-        ToastUtils.show('${exception.code},${exception.error}');
+  Api.post<List<dynamic>>('others/homeBannerList').then((bannerList) {
+    print(bannerList.length);
+  }, onError: (e) {
+    String content;
+    if(e is NoSuchMethodError){
+      content=(e as NoSuchMethodError).toString();
+    }else if(e is RequestErrorException){
+      RequestErrorException exception = (e as RequestErrorException);
+      content='${exception.code},${exception.error}';
+    }else{
+      content=e.toString();
+    }
+    print(content);
   });
 }

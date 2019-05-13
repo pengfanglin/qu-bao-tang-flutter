@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter/utils/api.dart';
-import 'package:my_flutter/utils/application.dart';
-import 'package:my_flutter/utils/toast_utils.dart';
+import 'package:qu_bao_tang/utils/api.dart';
+import 'package:qu_bao_tang/utils/application.dart';
+import 'package:qu_bao_tang/utils/toast_utils.dart';
 
 class Search extends StatelessWidget {
   @override

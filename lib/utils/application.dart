@@ -6,5 +6,5 @@ class Application{
   //主题色
   static const Color themeColor=Color(0xFF409EFF);
   //图片根路径
-  static const String IMG_URL='http://192.168.0.110:8080/';
+  static const String IMG_URL='http://47.101.151.125:666/';
 }

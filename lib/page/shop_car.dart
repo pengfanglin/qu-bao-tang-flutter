@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter/utils/api.dart';
+import 'package:qu_bao_tang/utils/api.dart';
 
 class ShopCar extends StatelessWidget{
   @override

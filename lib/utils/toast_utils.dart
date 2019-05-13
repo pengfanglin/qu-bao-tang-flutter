@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_flutter/utils/application.dart';
+import 'package:qu_bao_tang/utils/application.dart';
 
 class ToastUtils {
   static void show(String message, {int duration,BuildContext context}) {
