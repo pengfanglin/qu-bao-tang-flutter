@@ -15,130 +15,111 @@ class GoodsClassRoot extends StatelessWidget {
             TopTitle(),
             Expanded(
               flex: 1,
-              child: Row(
-                mainAxisSize: MainAxisSize.max,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  LeftGoodsClass(),
-                  Expanded(
-                    flex: 1,
-                    child: RightGoodsClass(),
-                  )
-                ],
-              ),
+              child: GoodsClassBody(),
             )
           ],
         )));
   }
 }
 
-///顶部标题栏
-class TopTitle extends StatelessWidget {
+class GoodsClassBody extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-      color: Application.themeColor,
-      child: Center(
-        child: Container(child: Text('商品分类', style: TextStyle(color: Colors.white, fontSize: 20))),
-      ),
-    );
-  }
+  createState() => GoodsClassBodyState();
 }
 
-///左边商品分类树
-class LeftGoodsClass extends StatefulWidget {
-  createState() => LeftGoodsClassState();
-}
-
-class LeftGoodsClassState extends State<LeftGoodsClass> {
-  List<Widget> list = List<Widget>();
-
-  @override
-  void initState() {
-    super.initState();
-    Api.post<List<dynamic>>('goods/goodsClassTree').then((goodsClassTree) {
-      setState(() {
-        list = List<Widget>();
-        goodsClassTree.forEach((goodsClass) {
-          list.add(GestureDetector(
-              onTap: () {
-                ToastUtils.show(goodsClass['className']);
-              },
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 5),
-                child: Center(
-                  child: Text(goodsClass['className'], softWrap: false, style: TextStyle(color: Colors.white, fontSize: 20)),
-                ),
-              )));
-        });
-      });
-    }, onError: (e) {
-      RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}', context: context);
-    });
-  }
-
-  void searchHistoryClick(id) {
-    ToastUtils.show('$id', context: context);
-  }
+class GoodsClassBodyState extends State<GoodsClassBody> {
+  int clickIndex=0;
+  List<dynamic> leftGoodsClassList = List<dynamic>();
+  List<dynamic> rightGoodsClassList = List<dynamic>();
+  List<Widget> leftClassWidget = List<Widget>();
+  List<Widget> rightClassWidget = List<Widget>();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Application.themeColor,
-      constraints: BoxConstraints(maxWidth: 110),
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: ListView(shrinkWrap: true, children: list),
-    );
-  }
-}
-
-///右边商品分类
-class RightGoodsClass extends StatefulWidget {
-  createState() => RightGoodsClassState();
-}
-
-class RightGoodsClassState extends State<RightGoodsClass> {
-  List<Widget> list = List<Widget>();
-
-  @override
-  void initState() {
-    super.initState();
-    Api.post<List<dynamic>>('goods/goodsClassTree').then((goodsClassTree) {
-      setState(() {
-        list = List<Widget>();
-        goodsClassTree.forEach((goodsClass) {
-          list.add(buildItem(goodsClass));
-        });
-      });
-    }, onError: (e) {
-      RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}', context: context);
-    });
-  }
-
-  void searchHistoryClick(id) {
-    ToastUtils.show('$id', context: context);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      constraints: BoxConstraints(maxWidth: 150),
-      padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-      child: GridView(
-        shrinkWrap: true,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2, //每行5个
-          mainAxisSpacing: 10, //主轴方向间距
-          crossAxisSpacing: 10, //水平方向间距
-          childAspectRatio: 2 / 2.5
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Container(
+          color: Application.themeColor,
+          constraints: BoxConstraints(maxWidth: 110),
+          child: ListView(shrinkWrap: true, children: leftClassWidget),
         ),
-        children: list,
-      ),
+        Expanded(
+          flex: 1,
+          child: Container(
+            child: GridView(
+              padding: EdgeInsets.only(top: 10,left: 10,right: 10),
+              shrinkWrap: true,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, //每行5个
+                  mainAxisSpacing: 10, //主轴方向间距
+                  crossAxisSpacing: 10, //水平方向间距
+                  childAspectRatio: 2 / 2.5),
+              children: rightClassWidget,
+            ),
+          ),
+        )
+      ],
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Api.post<List<dynamic>>('goods/goodsClassTree').then((goodsClassTree) {
+      setState(() {
+        leftGoodsClassList = goodsClassTree;
+        buildLeftClassWidgetList();
+        if (leftGoodsClassList.length > 0) {
+          this.buildRightClassWidgetList(0);
+        }
+      });
+    }, onError: (e) {
+      RequestErrorException exception = (e as RequestErrorException);
+      ToastUtils.show('${exception.code},${exception.error}', context: context);
+    });
+  }
+
+  void buildLeftClassWidgetList() {
+    leftClassWidget=List<Widget>();
+    for (int i = 0; i < leftGoodsClassList.length; i++) {
+      leftClassWidget.add(GestureDetector(
+          onTap: () {
+            setState(() {
+              rightGoodsClassList = leftGoodsClassList[i]['goodsClassModels'];
+              clickIndex=i;
+              buildLeftClassWidgetList();
+              buildRightClassWidgetList(i);
+            });
+          },
+          child: Container(
+            decoration: clickIndex==i?ShapeDecoration(
+                color: Colors.white,
+                shape: Border(left: BorderSide(color: Colors.red,width: 5))
+            ):BoxDecoration(
+                color: Application.themeColor
+            ),
+            padding: EdgeInsets.symmetric(vertical: 5),
+            child: Center(
+              child: Text(
+                  leftGoodsClassList[i]['className'],
+                  softWrap: false,
+                  style: TextStyle(
+                      color: clickIndex==i?Application.themeColor:Colors.white,
+                      fontSize: 20
+                  )),
+            ),
+          )));
+    }
+  }
+
+  void buildRightClassWidgetList(index) {
+    rightClassWidget = List<Widget>();
+    rightGoodsClassList = (leftGoodsClassList[index]['goodsClassModels'] as List<dynamic>);
+    rightGoodsClassList.forEach((goodsClass) {
+      rightClassWidget.add(buildItem(goodsClass));
+    });
   }
 
   Widget buildItem(dynamic goodsClass) {
@@ -146,7 +127,7 @@ class RightGoodsClassState extends State<RightGoodsClass> {
       onTap: () {
         ToastUtils.show(goodsClass['className']);
       },
-      child:ClipRRect(
+      child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
         child: Container(
             decoration: BoxDecoration(
@@ -169,6 +150,21 @@ class RightGoodsClassState extends State<RightGoodsClass> {
                 ),
               )
             ])),
+      ),
+    );
+  }
+}
+
+///顶部标题栏
+class TopTitle extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width,
+      padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+      color: Application.themeColor,
+      child: Center(
+        child: Container(child: Text('商品分类', style: TextStyle(color: Colors.white, fontSize: 20))),
       ),
     );
   }

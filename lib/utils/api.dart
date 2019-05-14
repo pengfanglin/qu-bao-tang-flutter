@@ -1,8 +1,6 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 
-import '../model_factory.dart';
-
 ///http请求
 class Api {
   Api._();
@@ -12,8 +10,8 @@ class Api {
   static Dio init() {
     Dio dio = Dio(BaseOptions(
 //        baseUrl: 'http://192.168.0.110:8080/',
-      baseUrl: 'http://qbt.qubaotang.cn/api/',
-        connectTimeout: 1000,
+      baseUrl: 'http://47.101.151.125:666/',
+        connectTimeout: 10000,
         receiveTimeout: 10000
     ));
     //打印请求日志和结果
@@ -86,11 +84,7 @@ class Api {
       return await Future.error(RequestErrorException(0,'请求超时'));
     }else {
       if(response.data['status']){
-        if(response.data['data']is List<dynamic>){
-          return await Future.value(response.data['data']);
-        }else{
-          return await Future.value(ModelFactory.generateOBJ<T>(response.data['data']));
-        }
+        return await Future.value(response.data['data']);
       }else{
         return await Future.error( RequestErrorException(response.data['code'],response.data['error']));
       }

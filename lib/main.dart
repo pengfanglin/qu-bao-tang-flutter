@@ -39,6 +39,7 @@ class TableMenuState extends State<TableMenu> {
 
   @override
   Widget build(BuildContext context) {
+    Application.context=context;
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         items: buildMenus(),
