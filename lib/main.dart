@@ -14,10 +14,7 @@ void main() {
     theme: ThemeData(
       primaryColor: Application.themeColor
     ),
-    home: TableMenu(),
-    routes: <String,WidgetBuilder>{
-      '/search': (_) => Search()
-    },
+    home: TableMenu()
   ));
 }
 
@@ -26,15 +23,24 @@ class TableMenu extends StatefulWidget {
 }
 
 class TableMenuState extends State<TableMenu> {
-  List<Widget> pages = List<Widget>();
-  int index = 0;
-  List<String> menuImages = ['home', 'shop_car', 'order', 'find', 'my'];
-  List<String> menuTitles = ['首页', '购物车', '订单', '发现', '我的'];
+  List<Widget> _pages;
+  int _currentIndex;
+  PageController _controller;
+  List<String> _menuImages = ['home', 'shop_car', 'order', 'find', 'my'];
+  List<String> _menuTitles = ['首页', '购物车', '订单', '发现', '我的'];
 
   @override
   void initState() {
     super.initState();
-    pages..add(Home())..add(ShopCar())..add(Order())..add(Find())..add(My());
+    _currentIndex=0;
+    _controller=PageController(initialPage: 0);
+    _pages=List<Widget>()..add(Home())..add(ShopCar())..add(Order())..add(Find())..add(My());
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
   }
 
   @override
@@ -43,26 +49,37 @@ class TableMenuState extends State<TableMenu> {
     return Scaffold(
       bottomNavigationBar: BottomNavigationBar(
         items: buildMenus(),
-        currentIndex: index,
-        onTap: (nowIndex) {
-          setState(() {
-            index = nowIndex;
-          });
+        currentIndex: _currentIndex,
+        onTap: (index) {
+          _controller.jumpToPage(index);
         },
         backgroundColor: Color(0xFFEEEFFF),
         type: BottomNavigationBarType.fixed
       ),
-      body: pages[index]
+      body: PageView.builder(
+          physics: NeverScrollableScrollPhysics(),
+          controller: _controller,
+          onPageChanged: _pageChange,
+          itemCount: _pages.length,
+          itemBuilder: (context, index) => _pages[index])
     );
+  }
+
+  void _pageChange(int index) {
+    if (index != _currentIndex) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
   }
 
   List<BottomNavigationBarItem> buildMenus() {
     List<BottomNavigationBarItem> menuItems = List<BottomNavigationBarItem>();
-    for (int i = 0; i < menuImages.length; i++) {
+    for (int i = 0; i < _menuImages.length; i++) {
       menuItems.add(BottomNavigationBarItem(
-        icon: Image.asset('res/images/icon/${menuImages[i]}.png', width: 30, height: 30),
-        activeIcon: Image.asset('res/images/icon/${menuImages[i]}_hover.png', width: 30, height: 30),
-        title: Text(menuTitles[i]),
+        icon: Image.asset('res/images/icon/${_menuImages[i]}.png', width: 30, height: 30),
+        activeIcon: Image.asset('res/images/icon/${_menuImages[i]}_hover.png', width: 30, height: 30),
+        title: Text(_menuTitles[i]),
       ));
     }
     return menuItems;

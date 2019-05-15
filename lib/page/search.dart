@@ -84,8 +84,7 @@ class SearchHistoryState extends State<SearchHistory> {
         });
       });
     }, onError: (e) {
-      RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}', context: context);
+      ToastUtils.show(e);
     });
   }
 
@@ -138,8 +137,7 @@ class HotSearchState extends State<HotSearch> {
         });
       });
     }, onError: (e) {
-      RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}', context: context);
+      ToastUtils.show(e);
     });
   }
 

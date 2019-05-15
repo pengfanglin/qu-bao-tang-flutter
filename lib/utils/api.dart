@@ -10,7 +10,7 @@ class Api {
   static Dio init() {
     Dio dio = Dio(BaseOptions(
 //        baseUrl: 'http://192.168.0.110:8080/',
-      baseUrl: 'http://47.101.151.125:666/',
+      baseUrl: 'http://qbt.qubaotang.cn/api/',
         connectTimeout: 10000,
         receiveTimeout: 10000
     ));
@@ -47,13 +47,13 @@ class Api {
     } on DioError catch (e) {
       if(e.type==DioErrorType.DEFAULT){
         if (e.error is SocketException) {
-          return Future.error(RequestErrorException(0,'远程计算机拒绝网络连接'));
+          return Future.error('远程计算机拒绝网络连接');
         } else if (e.error is HandshakeException) {
-          return Future.error(RequestErrorException(0,'请检查服务器是否支持http或者https'));
+          return Future.error('请检查服务器是否支持http或者https');
         } else if (e.error is RangeError){
-          return Future.error(RequestErrorException(0,'请求url不合法，请以http://或者https://作为前缀'));
+          return Future.error('请求url不合法，请以http://或者https://作为前缀');
         }else{
-          return Future.error(RequestErrorException(0,e.error));
+          return Future.error(e.error);
         }
       }else if(e.type==DioErrorType.RESPONSE){
         String message;
@@ -77,22 +77,19 @@ class Api {
             message='未知异常:${e.response.statusCode}';
             break;
         }
-        throw RequestErrorException(e.response.statusCode,message);
+        return Future.error(message);
       }
+    } catch(e){
+      Future.error("接口请求出错");
     }
     if(response==null||response.data==null){
-      return await Future.error(RequestErrorException(0,'请求超时'));
+      return Future.error('请求超时');
     }else {
       if(response.data['status']){
-        return await Future.value(response.data['data']);
+        return Future.value(response.data['data']);
       }else{
-        return await Future.error( RequestErrorException(response.data['code'],response.data['error']));
+        return Future.error(response.data['error']);
       }
     }
   }
-}
-class RequestErrorException{
-  int code;
-  String error;
-  RequestErrorException(this.code,this.error);
 }

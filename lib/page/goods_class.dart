@@ -28,7 +28,7 @@ class GoodsClassBody extends StatefulWidget {
 }
 
 class GoodsClassBodyState extends State<GoodsClassBody> {
-  int clickIndex=0;
+  int clickIndex = 0;
   List<dynamic> leftGoodsClassList = List<dynamic>();
   List<dynamic> rightGoodsClassList = List<dynamic>();
   List<Widget> leftClassWidget = List<Widget>();
@@ -49,7 +49,7 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
           flex: 1,
           child: Container(
             child: GridView(
-              padding: EdgeInsets.only(top: 10,left: 10,right: 10),
+              padding: EdgeInsets.only(top: 10, left: 10, right: 10),
               shrinkWrap: true,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2, //每行5个
@@ -76,39 +76,30 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
         }
       });
     }, onError: (e) {
-      RequestErrorException exception = (e as RequestErrorException);
-      ToastUtils.show('${exception.code},${exception.error}', context: context);
+      ToastUtils.show(e);
     });
   }
 
   void buildLeftClassWidgetList() {
-    leftClassWidget=List<Widget>();
+    leftClassWidget = List<Widget>();
     for (int i = 0; i < leftGoodsClassList.length; i++) {
       leftClassWidget.add(GestureDetector(
           onTap: () {
             setState(() {
               rightGoodsClassList = leftGoodsClassList[i]['goodsClassModels'];
-              clickIndex=i;
+              clickIndex = i;
               buildLeftClassWidgetList();
               buildRightClassWidgetList(i);
             });
           },
           child: Container(
-            decoration: clickIndex==i?ShapeDecoration(
-                color: Colors.white,
-                shape: Border(left: BorderSide(color: Colors.red,width: 5))
-            ):BoxDecoration(
-                color: Application.themeColor
-            ),
+            decoration: clickIndex == i
+                ? ShapeDecoration(color: Colors.white, shape: Border(left: BorderSide(color: Colors.red, width: 5)))
+                : BoxDecoration(color: Application.themeColor),
             padding: EdgeInsets.symmetric(vertical: 5),
             child: Center(
-              child: Text(
-                  leftGoodsClassList[i]['className'],
-                  softWrap: false,
-                  style: TextStyle(
-                      color: clickIndex==i?Application.themeColor:Colors.white,
-                      fontSize: 20
-                  )),
+              child: Text(leftGoodsClassList[i]['name'],
+                  softWrap: false, style: TextStyle(color: clickIndex == i ? Application.themeColor : Colors.white, fontSize: 20)),
             ),
           )));
     }
@@ -125,7 +116,7 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
   Widget buildItem(dynamic goodsClass) {
     return GestureDetector(
       onTap: () {
-        ToastUtils.show(goodsClass['className']);
+        ToastUtils.show(goodsClass['name']);
       },
       child: ClipRRect(
         borderRadius: BorderRadius.circular(10),
@@ -138,15 +129,12 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
               Expanded(
                   flex: 1,
                   child: Container(
-                    child: Image.network(
-                      Application.IMG_URL + goodsClass['classImg'],
-                      fit: BoxFit.cover,
-                    ),
+                    child: FadeInImage.assetNetwork(placeholder: Application.loadingImg, image: Application.IMG_URL + goodsClass['img']),
                   )),
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                 child: Center(
-                  child: Text(goodsClass['className'], softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14)),
+                  child: Text(goodsClass['name'], softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 14)),
                 ),
               )
             ])),

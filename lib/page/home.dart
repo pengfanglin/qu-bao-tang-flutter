@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:qu_bao_tang/component/widgets.dart';
 import 'package:qu_bao_tang/page/search.dart' show Search;
 import 'package:qu_bao_tang/utils/api.dart';
 import 'package:qu_bao_tang/utils/application.dart';
@@ -7,26 +8,34 @@ import 'package:qu_bao_tang/utils/toast_utils.dart';
 
 import 'goods_class.dart' show GoodsClassRoot;
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
+  createState()=>HomeState();
+}
+
+class HomeState extends State<Home> with AutomaticKeepAliveClientMixin{
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
         backgroundColor: Colors.white,
         body: SafeArea(
             child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            TopSearch(),
-            Expanded(
-              child: ListView(
-                shrinkWrap: true,
-                physics: AlwaysScrollableScrollPhysics(),
-                children: <Widget>[Banner(), GoodsClass(), HotSales(), HotGoods()],
-              ),
-            )
-          ],
-        )));
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                TopSearch(),
+                Expanded(
+                  child: ListView(
+                    shrinkWrap: true,
+                    physics: AlwaysScrollableScrollPhysics(),
+                    children: <Widget>[Banner(), GoodsClass(), HotSales(), HotGoods()],
+                  ),
+                )
+              ],
+            )));
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 ///热卖图片
@@ -75,7 +84,7 @@ class BannerState extends State<Banner> {
   Swiper swiper = Swiper(
       itemCount: 5,
       itemBuilder: (context, index) {
-        return Image.network(Application.IMG_URL + '/images/others/slider1.jpg', fit: BoxFit.fill);
+        return Image.asset('res/images/loading.gif');
       });
 
   @override
@@ -85,30 +94,19 @@ class BannerState extends State<Banner> {
       setState(() {
         swiper = Swiper(
             itemBuilder: (context, index) {
-              return Image.network(
-                Application.IMG_URL + bannerList[index]['bannerImg'],
-                fit: BoxFit.fill,
-              );
+              return ImgCache(Application.IMG_URL + bannerList[index]['img']);
             },
             itemCount: bannerList.length,
             pagination: new SwiperPagination(builder: DotSwiperPaginationBuilder(color: Colors.white, activeColor: Colors.red)),
             scrollDirection: Axis.horizontal,
             autoplay: true,
             autoplayDelay: 2000,
-            onTap: (index) => print('点击了第$index个'));
+            onTap: (index){
+              ToastUtils.show('点击了第$index个');
+            });
       });
     }, onError: (e) {
-      String content;
-      if (e is NoSuchMethodError) {
-        content = (e as NoSuchMethodError).toString();
-      } else if (e is RequestErrorException) {
-        RequestErrorException exception = (e as RequestErrorException);
-        content = '${exception.code},${exception.error}';
-      } else {
-        content = e.toString();
-      }
-      print(content);
-      ToastUtils.show(content, context: context);
+      ToastUtils.show(e);
     });
   }
 
@@ -159,25 +157,15 @@ class GoodsClassState extends State<GoodsClass> {
         for (int i = 0; i < goodsClassList.length; i++) {
           list.add(GestureDetector(
             onTap: () {
-              goodsClassClick(i + 1, goodsClassList[i]['classId']);
+              goodsClassClick(i + 1, goodsClassList[i]['id']);
             },
             child: CircleAvatar(
-                backgroundColor: Colors.greenAccent, radius: 50, backgroundImage: NetworkImage(Application.IMG_URL + goodsClassList[i]['classImg'])),
+                backgroundColor: Colors.greenAccent, radius: 50, backgroundImage: NetworkImage(Application.IMG_URL + goodsClassList[i]['img'])),
           ));
         }
       });
     }, onError: (e) {
-      String content;
-      if (e is NoSuchMethodError) {
-        content = (e as NoSuchMethodError).toString();
-      } else if (e is RequestErrorException) {
-        RequestErrorException exception = (e as RequestErrorException);
-        content = '${exception.code},${exception.error}';
-      } else {
-        content = e.toString();
-      }
-      print(content);
-      ToastUtils.show(content, context: context);
+      ToastUtils.show(e);
     });
   }
 
@@ -234,24 +222,14 @@ class HotGoodsState extends State<HotGoods> {
         });
       });
     }, onError: (e) {
-      String content;
-      if (e is NoSuchMethodError) {
-        content = (e as NoSuchMethodError).toString();
-      } else if (e is RequestErrorException) {
-        RequestErrorException exception = (e as RequestErrorException);
-        content = '${exception.code},${exception.error}';
-      } else {
-        content = e.toString();
-      }
-      print(content);
-      ToastUtils.show(content, context: context);
+      ToastUtils.show(e);
     });
   }
 
   Widget buildItem(dynamic goods) {
     return GestureDetector(
       onTap: () {
-        hotGoodsClick(goods['goodsId']);
+        hotGoodsClick(goods['id']);
       },
       child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -266,10 +244,7 @@ class HotGoodsState extends State<HotGoods> {
                               goods['img'],
                               fit: BoxFit.fill,
                             )
-                          : Image.network(
-                              Application.IMG_URL + goods['img'],
-                              fit: BoxFit.fill,
-                            ),
+                          : ImgCache(Application.IMG_URL + goods['img']),
                     )),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
