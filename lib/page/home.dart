@@ -35,7 +35,7 @@ class HomeState extends State<Home> with AutomaticKeepAliveClientMixin{
   }
 
   @override
-  bool get wantKeepAlive => true;
+  bool get wantKeepAlive => false;
 }
 
 ///热卖图片
@@ -120,7 +120,7 @@ class BannerState extends State<Banner> {
   }
 }
 
-///商品分裂
+///商品分类
 class GoodsClass extends StatefulWidget {
   createState() => GoodsClassState();
 }
@@ -131,52 +131,64 @@ class GoodsClassState extends State<GoodsClass> {
   @override
   void initState() {
     super.initState();
-    list.add(GestureDetector(
-      onTap: () {
-        goodsClassClick(0, 0);
-      },
-      child: CircleAvatar(radius: 50, backgroundColor: Application.themeColor, backgroundImage: AssetImage('res/images/icon/all_class.png')),
-    ));
+    list = List<Widget>();
+    Map data={
+      'type':'assert',
+      'id':0,
+      'name':'加载中。。。',
+      'img':'res/images/icon/all_class.png'
+    };
+    list.add(buildItem(data));
+    data={
+      'type':'assert',
+      'id':0,
+      'name':'加载中。。。',
+      'img':'res/images/loading.gif'
+    };
     for (int i = 0; i < 9; i++) {
-      list.add(GestureDetector(
-        onTap: () {
-          goodsClassClick(i + 1, -1);
-        },
-        child: CircleAvatar(backgroundColor: Colors.greenAccent, radius: 50, backgroundImage: AssetImage('res/images/loading.gif')),
-      ));
+      list.add(buildItem(data));
     }
     Api.post<List<dynamic>>('goods/homeGoodsClassList').then((goodsClassList) {
       setState(() {
         list = List<Widget>();
-        list.add(GestureDetector(
-          onTap: () {
-            goodsClassClick(0, 0);
-          },
-          child: CircleAvatar(radius: 50, backgroundColor: Application.themeColor, backgroundImage: AssetImage('res/images/icon/all_class.png')),
-        ));
-        for (int i = 0; i < goodsClassList.length; i++) {
-          list.add(GestureDetector(
-            onTap: () {
-              goodsClassClick(i + 1, goodsClassList[i]['id']);
-            },
-            child: CircleAvatar(
-                backgroundColor: Colors.greenAccent, radius: 50, backgroundImage: NetworkImage(Application.IMG_URL + goodsClassList[i]['img'])),
-          ));
-        }
+        Map data={
+          'type':'assert',
+          'id':0,
+          'name':'全部分类',
+          'img':'res/images/icon/all_class.png'
+        };
+        list.add(buildItem(data));
+        goodsClassList.forEach((goodsClass){
+          goodsClass['type']='network';
+          list.add(buildItem(goodsClass));
+        });
       });
     }, onError: (e) {
       ToastUtils.show(e);
     });
   }
 
-  void goodsClassClick(index, classId) {
-    if(index==0){
-      Navigator.of(context).push(MaterialPageRoute(builder: (_) {
-        return GoodsClassRoot();
-      }));
-    }else{
-      ToastUtils.show('$index,$classId', context: context);
-    }
+  Widget buildItem(goodsClass){
+    return GestureDetector(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(builder: (_) {
+          return GoodsClassRoot(goodsClass['id']);
+        }));
+      },
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            flex: 1,
+            child: CircleAvatar(
+                backgroundColor: Application.themeColor,
+                radius: 30,
+                backgroundImage: goodsClass['type']=='assert'?AssetImage(goodsClass['img']):NetworkImage(Application.IMG_URL + goodsClass['img'])
+            ),
+          ),
+          Text(goodsClass['name'],style: TextStyle(color: Colors.black54),softWrap: false)
+        ],
+      ),
+    );
   }
 
   @override
@@ -191,6 +203,7 @@ class GoodsClassState extends State<GoodsClass> {
           crossAxisCount: 5, //每行5个
           mainAxisSpacing: 5, //主轴方向间距
           crossAxisSpacing: 10, //水平方向间距
+          childAspectRatio: 1 / 1.2
         ),
         children: list,
       ),

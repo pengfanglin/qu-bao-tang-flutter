@@ -57,7 +57,6 @@ class TableMenuState extends State<TableMenu> {
         type: BottomNavigationBarType.fixed
       ),
       body: PageView.builder(
-          physics: NeverScrollableScrollPhysics(),
           controller: _controller,
           onPageChanged: _pageChange,
           itemCount: _pages.length,

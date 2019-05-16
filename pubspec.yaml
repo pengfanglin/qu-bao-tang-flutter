@@ -29,6 +29,8 @@ flutter:
   - res/images/icon/shop_car.png
   - res/images/icon/shop_car_hover.png
   - res/images/icon/all_class.png
+  - res/images/icon/complete.png
+  - res/images/icon/operation.png
   - res/images/hot_sales.png
   - res/images/loading.gif
   - res/images/404.png

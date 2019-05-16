@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:qu_bao_tang/component/widgets.dart';
 import 'package:qu_bao_tang/utils/api.dart';
 import 'package:qu_bao_tang/utils/application.dart';
 import 'package:qu_bao_tang/utils/toast_utils.dart';
 
 class GoodsClassRoot extends StatelessWidget {
+
+  final _classId;
+
+  GoodsClassRoot(this._classId);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +21,7 @@ class GoodsClassRoot extends StatelessWidget {
             TopTitle(),
             Expanded(
               flex: 1,
-              child: GoodsClassBody(),
+              child: GoodsClassBody(_classId),
             )
           ],
         )));
@@ -23,11 +29,20 @@ class GoodsClassRoot extends StatelessWidget {
 }
 
 class GoodsClassBody extends StatefulWidget {
+
+  final _classId;
+  GoodsClassBody(this._classId);
+
   @override
-  createState() => GoodsClassBodyState();
+  createState() => GoodsClassBodyState(_classId);
 }
 
 class GoodsClassBodyState extends State<GoodsClassBody> {
+  final _classId;
+  double _itemHeight=40;
+  ScrollController _controller=new ScrollController();
+  GoodsClassBodyState(this._classId);
+
   int clickIndex = 0;
   List<dynamic> leftGoodsClassList = List<dynamic>();
   List<dynamic> rightGoodsClassList = List<dynamic>();
@@ -43,7 +58,7 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
         Container(
           color: Application.themeColor,
           constraints: BoxConstraints(maxWidth: 110),
-          child: ListView(shrinkWrap: true, children: leftClassWidget),
+          child: ListView(shrinkWrap: true,controller: _controller, children: leftClassWidget),
         ),
         Expanded(
           flex: 1,
@@ -69,8 +84,15 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
     super.initState();
     Api.post<List<dynamic>>('goods/goodsClassTree').then((goodsClassTree) {
       setState(() {
+        for(int i=0;i<goodsClassTree.length;i++){
+          if(_classId==goodsClassTree[i]['id']){
+            clickIndex=i;
+            break;
+          }
+        }
         leftGoodsClassList = goodsClassTree;
         buildLeftClassWidgetList();
+        _controller.animateTo(clickIndex*_itemHeight, duration: new Duration(seconds: 2), curve: Curves.ease);
         if (leftGoodsClassList.length > 0) {
           this.buildRightClassWidgetList(0);
         }
@@ -93,10 +115,10 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
             });
           },
           child: Container(
+            height:_itemHeight,
             decoration: clickIndex == i
                 ? ShapeDecoration(color: Colors.white, shape: Border(left: BorderSide(color: Colors.red, width: 5)))
                 : BoxDecoration(color: Application.themeColor),
-            padding: EdgeInsets.symmetric(vertical: 5),
             child: Center(
               child: Text(leftGoodsClassList[i]['name'],
                   softWrap: false, style: TextStyle(color: clickIndex == i ? Application.themeColor : Colors.white, fontSize: 20)),
@@ -129,7 +151,7 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
               Expanded(
                   flex: 1,
                   child: Container(
-                    child: FadeInImage.assetNetwork(placeholder: Application.loadingImg, image: Application.IMG_URL + goodsClass['img']),
+                    child: ImgCache(Application.IMG_URL + goodsClass['img']),
                   )),
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
