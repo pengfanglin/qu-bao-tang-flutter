@@ -11,7 +11,7 @@ class Button extends FlatButton{
     Color disabledTextColor=Colors.white,
     Color color=Application.themeColor,
     Color disabledColor=Colors.grey,
-    Color highlightColor=const Color(0xFF82B1FF),
+    Color highlightColor=Application.themeColor,
     Color splashColor=Colors.transparent,
     Brightness colorBrightness=Brightness.light,
     EdgeInsetsGeometry padding=const EdgeInsets.all(10),
