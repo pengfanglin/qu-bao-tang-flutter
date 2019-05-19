@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:qu_bao_tang/component/button.dart';
 import 'package:qu_bao_tang/component/widgets.dart';
+import 'package:qu_bao_tang/page/goods.dart';
 import 'package:qu_bao_tang/utils/api.dart';
 import 'package:qu_bao_tang/utils/application.dart';
 import 'package:qu_bao_tang/utils/toast_utils.dart';
@@ -37,7 +37,7 @@ class ShopCarState extends State<ShopCar> with AutomaticKeepAliveClientMixin {
   }
 
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 
   Widget top() {
     return Container(
@@ -69,6 +69,12 @@ class ShopCarState extends State<ShopCar> with AutomaticKeepAliveClientMixin {
     _getData();
   }
 
+  @override
+  void dispose() {
+    super.dispose();
+    _controller.dispose();
+  }
+
   void _getData() {
     Api.post<dynamic>('user/shopCarList', params: {"page": page}).then((data) {
       _apiData.addAll(data['data']);
@@ -95,100 +101,110 @@ class ShopCarState extends State<ShopCar> with AutomaticKeepAliveClientMixin {
   Widget buildItem(index, data) {
     int _carId = data['id'];
     return Container(
-      decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
-      margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-      padding: EdgeInsets.symmetric(vertical: 10),
-      height: 120,
-      child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-        Container(
-          width: 40,
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                if (_carIds.contains(_carId)) {
-                  _carIds.remove(_carId);
-                } else {
-                  _carIds.add(_carId);
-                }
-                this.refresh();
-              });
-            },
-            child: _carIds.contains(_carId)
-                ? Icon(Icons.check_circle, color: Application.themeColor)
-                : Icon(Icons.radio_button_unchecked, color: Colors.black26),
+        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+        height: 120,
+        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+          Container(
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  if (_carIds.contains(_carId)) {
+                    _carIds.remove(_carId);
+                  } else {
+                    _carIds.add(_carId);
+                  }
+                  this.refresh();
+                });
+              },
+              child: _carIds.contains(_carId)
+                  ? Icon(Icons.check_circle, color: Application.themeColor)
+                  : Icon(Icons.radio_button_unchecked, color: Colors.black26),
+            ),
           ),
-        ),
-        Expanded(
-            flex: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  width: 100,
-                  child: ClipRRect(borderRadius: BorderRadius.circular(10), child: ImgCache(Application.IMG_URL + data['img'])),
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Container(
-                      width: 130,
-                      child:
-                          Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-                        Text(data['goodsName'], maxLines: 2, overflow: TextOverflow.ellipsis),
-                        Text(data['specificationName'], softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black54)),
-                        Text('￥' + data['specificationPrice'].toString(),
-                            softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red))
-                      ])),
-                )
-              ],
-            )),
-        Container(
-            alignment: Alignment.bottomCenter,
-            padding: EdgeInsets.only(right: 10),
-            child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black54, width: 1),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-                  Container(
-                      width: 20,
-                      height: 20,
-                      child: GestureDetector(
-                        onTap: () {
-                          if (data['number'] > 0) {
-                            data['number']--;
-                            this.refresh();
-                          }
-                        },
-                        child: Center(
-                          child: Text('-', softWrap: false, style: TextStyle(fontSize: 18, color: Colors.black54)),
-                        ),
-                      )),
-                  Container(
-                      padding: EdgeInsets.symmetric(horizontal: 5),
-                      width: 40,
-                      height: 20,
-                      child: Center(
-                        child: Text(data['number'].toString(), softWrap: false, style: TextStyle(fontSize: 13, color: Colors.black54)),
-                      ),
-                      decoration: ShapeDecoration(
-                          shape: Border(left: BorderSide(color: Colors.black54, width: 1), right: BorderSide(color: Colors.black54, width: 1)))),
-                  Container(
-                      width: 20,
-                      height: 20,
-                      child: GestureDetector(
-                          onTap: () {
-                            if (data['number'] < 999) {
-                              data['number']++;
-                              this.refresh();
-                            }
+          Expanded(
+              flex: 1,
+              child: Row(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+                GestureDetector(
+                    child: Container(
+                    width: 100,
+                    height: 100,
+                    margin: EdgeInsets.symmetric(horizontal: 10),
+                    child: ClipRRect(borderRadius: BorderRadius.circular(10), child: ImgCache(Application.STATIC_URL + data['img'])),
+                  ),
+                  onTap: (){
+                    Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return Goods(data['goodsId']);
                           },
-                          child: Center(
-                            child: Text('+', softWrap: false, style: TextStyle(fontSize: 16, color: Colors.black54)),
-                          )))
-                ])))
-      ]),
-    );
+                        )
+                    );
+                  },
+                ),
+                Expanded(
+                    flex: 1,
+                    child: Column(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(data['goodsName'], maxLines: 2, overflow: TextOverflow.ellipsis),
+                          Text(data['specificationName'], softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black54)),
+                          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+                            Text('￥' + data['specificationPrice'].toString(),
+                                softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                            Container(
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.black54, width: 1),
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+                                  Container(
+                                      width: 20,
+                                      height: 20,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          if (data['number'] > 0) {
+                                            data['number']--;
+                                            this.refresh();
+                                          }
+                                        },
+                                        child: Center(
+                                          child: Text('-', softWrap: false, style: TextStyle(fontSize: 18, color: Colors.black54)),
+                                        ),
+                                      )),
+                                  Container(
+                                      padding: EdgeInsets.symmetric(horizontal: 5),
+                                      width: 40,
+                                      height: 20,
+                                      child: Center(
+                                        child:
+                                            Text(data['number'].toString(), softWrap: false, style: TextStyle(fontSize: 13, color: Colors.black54)),
+                                      ),
+                                      decoration: ShapeDecoration(
+                                          shape: Border(
+                                              left: BorderSide(color: Colors.black54, width: 1),
+                                              right: BorderSide(color: Colors.black54, width: 1)))),
+                                  Container(
+                                      width: 20,
+                                      height: 20,
+                                      child: GestureDetector(
+                                          onTap: () {
+                                            if (data['number'] < 999) {
+                                              data['number']++;
+                                              this.refresh();
+                                            }
+                                          },
+                                          child: Center(
+                                            child: Text('+', softWrap: false, style: TextStyle(fontSize: 16, color: Colors.black54)),
+                                          )))
+                                ]))
+                          ])
+                        ]))
+              ]))
+        ]));
   }
 
   void refresh() {
@@ -203,9 +219,7 @@ class ShopCarState extends State<ShopCar> with AutomaticKeepAliveClientMixin {
   Widget bottom() {
     return Container(
       height: 50,
-      decoration: ShapeDecoration(
-        shape: Border(top: BorderSide(color: Colors.black26,width: 1))
-      ),
+      decoration: ShapeDecoration(shape: Border(top: BorderSide(color: Colors.black26, width: 1))),
       padding: EdgeInsets.symmetric(horizontal: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -213,10 +227,10 @@ class ShopCarState extends State<ShopCar> with AutomaticKeepAliveClientMixin {
           GestureDetector(
             onTap: () {
               setState(() {
-                if(_carIds.length==_apiData.length){
+                if (_carIds.length == _apiData.length) {
                   _carIds.clear();
                   this.refresh();
-                }else{
+                } else {
                   this._apiData.forEach((data) {
                     _carIds.add(data['id']);
                   });
@@ -241,37 +255,43 @@ class ShopCarState extends State<ShopCar> with AutomaticKeepAliveClientMixin {
                 child: Text('￥' + allPrice(), style: TextStyle(color: Colors.red)),
               ),
               GestureDetector(
-                onTap: (){
-                  if(_carIds.length==0){
+                onTap: () {
+                  if (_carIds.length == 0) {
                     ToastUtils.show('您还没有选择宝贝奥');
                     return;
                   }
-                  if(_topRightClick){
-                    Api.post('user/deleteShopCarByIds',params: {"ids":_carIds.join(',')}).then((data){
-                      ToastUtils.show("删除成功");
-                      List<dynamic> temp=List<dynamic>();
-                      _apiData.forEach((data){
-                        if(!_carIds.contains(data['id'])){
-                          temp.add(data);
-                        }
-                      });
-                      _carIds.clear();
-                      _apiData=temp;
-                      this.refresh();
+                  if (_topRightClick) {
+                    ToastUtils.dialog('删除宝贝', "确定要删除宝贝么？删除后无法恢复!").then((value) {
+                      if (value) {
+                        Api.post('user/deleteShopCarByIds', params: {"ids": _carIds.join(',')}).then((data) {
+                          ToastUtils.show("删除成功");
+                          List<dynamic> temp = List<dynamic>();
+                          _apiData.forEach((data) {
+                            if (!_carIds.contains(data['id'])) {
+                              temp.add(data);
+                            }
+                          });
+                          _carIds.clear();
+                          _apiData = temp;
+                          this.refresh();
+                        });
+                      }
                     });
-                  }else{
+                  } else {
                     ToastUtils.show("下单功能未开放");
                   }
                 },
-                child: _topRightClick?Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                  decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(20)),
-                  child: Text('删除(' + _carIds.length.toString() + ')', style: TextStyle(color: Colors.white)),
-                ):Container(
-                  padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
-                  decoration: BoxDecoration(color: Application.themeColor, borderRadius: BorderRadius.circular(20)),
-                  child: Text('结算(' + _carIds.length.toString() + ')', style: TextStyle(color: Colors.white)),
-                ),
+                child: _topRightClick
+                    ? Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                        decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(20)),
+                        child: Text('删除(' + _carIds.length.toString() + ')', style: TextStyle(color: Colors.white)),
+                      )
+                    : Container(
+                        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+                        decoration: BoxDecoration(color: Application.themeColor, borderRadius: BorderRadius.circular(20)),
+                        child: Text('结算(' + _carIds.length.toString() + ')', style: TextStyle(color: Colors.white)),
+                      ),
               )
             ],
           )
@@ -283,12 +303,12 @@ class ShopCarState extends State<ShopCar> with AutomaticKeepAliveClientMixin {
   String allPrice() {
     double price = 0;
     _apiData.forEach((data) {
-      if(_carIds.contains(data['id'])){
+      if (_carIds.contains(data['id'])) {
         price += data['specificationPrice'] * data['number'];
       }
     });
     String stringPrice = price.toString();
-    int index=stringPrice.indexOf('.');
-    return stringPrice.substring(index,stringPrice.length).length>2?stringPrice.substring(0,index+2):stringPrice;
+    int index = stringPrice.indexOf('.');
+    return stringPrice.substring(index, stringPrice.length).length > 2 ? stringPrice.substring(0, index + 2) : stringPrice;
   }
 }

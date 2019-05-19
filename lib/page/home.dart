@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:qu_bao_tang/component/widgets.dart';
+import 'package:qu_bao_tang/page/goods.dart';
 import 'package:qu_bao_tang/page/search.dart' show Search;
 import 'package:qu_bao_tang/utils/api.dart';
 import 'package:qu_bao_tang/utils/application.dart';
@@ -35,7 +36,7 @@ class HomeState extends State<Home> with AutomaticKeepAliveClientMixin{
   }
 
   @override
-  bool get wantKeepAlive => false;
+  bool get wantKeepAlive => true;
 }
 
 ///热卖图片
@@ -94,15 +95,27 @@ class BannerState extends State<Banner> {
       setState(() {
         swiper = Swiper(
             itemBuilder: (context, index) {
-              return ImgCache(Application.IMG_URL + bannerList[index]['img']);
+              return ImgCache(Application.STATIC_URL + bannerList[index]['img']);
             },
             itemCount: bannerList.length,
-            pagination: new SwiperPagination(builder: DotSwiperPaginationBuilder(color: Colors.white, activeColor: Colors.red)),
+            pagination: SwiperPagination(builder: DotSwiperPaginationBuilder(color: Colors.white, activeColor: Colors.red)),
             scrollDirection: Axis.horizontal,
             autoplay: true,
             autoplayDelay: 2000,
             onTap: (index){
-              ToastUtils.show('点击了第$index个');
+              if(bannerList[index]['type']=='COMMON'){
+                ToastUtils.webView(Application.STATIC_URL+bannerList[index]['url'],title: '测试标题');
+              }else if(bannerList[index]['type']=='GOODS'){
+                Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return Goods(bannerList[index]['businessId']);
+                      },
+                    )
+                );
+              }else if(bannerList[index]['type']=='CHAIN'){
+                ToastUtils.webView(bannerList[index]['url'],title: '测试标题');
+              }
             });
       });
     }, onError: (e) {
@@ -182,7 +195,7 @@ class GoodsClassState extends State<GoodsClass> {
             child: CircleAvatar(
                 backgroundColor: Application.themeColor,
                 radius: 30,
-                backgroundImage: goodsClass['type']=='assert'?AssetImage(goodsClass['img']):NetworkImage(Application.IMG_URL + goodsClass['img'])
+                backgroundImage: goodsClass['type']=='assert'?AssetImage(goodsClass['img']):NetworkImage(Application.STATIC_URL + goodsClass['img'])
             ),
           ),
           Text(goodsClass['name'],style: TextStyle(color: Colors.black54),softWrap: false)
@@ -198,12 +211,12 @@ class GoodsClassState extends State<GoodsClass> {
       color: const Color(0xFFEEEFFF),
       child: GridView(
         shrinkWrap: true,
-        physics: new NeverScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 5, //每行5个
           mainAxisSpacing: 5, //主轴方向间距
           crossAxisSpacing: 10, //水平方向间距
-          childAspectRatio: 1 / 1.2
+          childAspectRatio: 1 / 1.3
         ),
         children: list,
       ),
@@ -242,7 +255,13 @@ class HotGoodsState extends State<HotGoods> {
   Widget buildItem(dynamic goods) {
     return GestureDetector(
       onTap: () {
-        hotGoodsClick(goods['id']);
+        Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return Goods(goods['id']);
+              },
+            )
+        );
       },
       child: ClipRRect(
           borderRadius: BorderRadius.circular(10),
@@ -257,7 +276,7 @@ class HotGoodsState extends State<HotGoods> {
                               goods['img'],
                               fit: BoxFit.fill,
                             )
-                          : ImgCache(Application.IMG_URL + goods['img']),
+                          : ImgCache(Application.STATIC_URL + goods['img']),
                     )),
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -295,15 +314,11 @@ class HotGoodsState extends State<HotGoods> {
       color: const Color(0xFFEEEFFF),
       child: GridView(
         shrinkWrap: true,
-        physics: new NeverScrollableScrollPhysics(),
+        physics: NeverScrollableScrollPhysics(),
         gridDelegate:
             SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 2, mainAxisSpacing: 5, crossAxisSpacing: 10, childAspectRatio: 2 / 2.8),
         children: list,
       ),
     );
-  }
-
-  hotGoodsClick(goodsId) {
-    print(goodsId);
   }
 }

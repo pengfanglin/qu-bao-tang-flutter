@@ -40,7 +40,7 @@ class GoodsClassBody extends StatefulWidget {
 class GoodsClassBodyState extends State<GoodsClassBody> {
   final _classId;
   double _itemHeight=40;
-  ScrollController _controller=new ScrollController();
+  ScrollController _controller=ScrollController();
   GoodsClassBodyState(this._classId);
 
   int clickIndex = 0;
@@ -92,7 +92,7 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
         }
         leftGoodsClassList = goodsClassTree;
         buildLeftClassWidgetList();
-        _controller.animateTo(clickIndex*_itemHeight, duration: new Duration(seconds: 2), curve: Curves.ease);
+        _controller.animateTo(clickIndex*_itemHeight, duration: Duration(seconds: 2), curve: Curves.ease);
         if (leftGoodsClassList.length > 0) {
           this.buildRightClassWidgetList(0);
         }
@@ -151,7 +151,7 @@ class GoodsClassBodyState extends State<GoodsClassBody> {
               Expanded(
                   flex: 1,
                   child: Container(
-                    child: ImgCache(Application.IMG_URL + goodsClass['img']),
+                    child: ImgCache(Application.STATIC_URL + goodsClass['img']),
                   )),
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),

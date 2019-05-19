@@ -12,7 +12,10 @@
          In most cases you can leave this as-is, but you if you want to provide
          additional functionality it is fine to subclass or reimplement
          FlutterApplication and put your custom class here. -->
+
+    <!--不设置usesCleartextTraffic，webView无法打开http前缀的网页-->
     <application
+        android:usesCleartextTraffic="true"
         android:name="io.flutter.app.FlutterApplication"
         android:label="趣宝堂"
         android:icon="@mipmap/logo">
