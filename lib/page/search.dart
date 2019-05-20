@@ -265,58 +265,58 @@ class SearchBodyState extends State<SearchBody> with SingleTickerProviderStateMi
   }
 
   Widget buildGoodsItem(index, data) {
-    return Container(
-        decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
-        margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
-        height: 120,
-        child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-          Expanded(
-              flex: 1,
-              child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    GestureDetector(
-                      child: Container(
+    return GestureDetector(
+      onTap: (){
+        Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) {
+                return Goods(data['id']);
+              },
+            )
+        );
+      },
+      child: Container(
+          decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
+          margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: EdgeInsets.symmetric(vertical: 10,horizontal: 10),
+          height: 120,
+          child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
+            Expanded(
+                flex: 1,
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
                         width: 100,
                         height: 100,
                         margin: EdgeInsets.symmetric(horizontal: 10),
                         child: ClipRRect(borderRadius: BorderRadius.circular(10), child: ImgCache(Application.STATIC_URL + data['img'])),
                       ),
-                      onTap: (){
-                        Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return Goods(data['id']);
-                              },
-                            )
-                        );
-                      },
-                    ),
-                    Expanded(
-                        flex: 1,
-                        child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text(data['name'], maxLines: 2, overflow: TextOverflow.ellipsis),
-                              Text('库存:'+data['stock'], softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black54)),
-                              Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  children: <Widget>[
-                                    Text('￥' + data['nowPrice'].toString(),
-                                        softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
-                                    Text(data['totalSales']+'人购买',
-                                        softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black87))
-                                  ]
-                              )
-                            ]
-                        )
-                    )
-                  ]
-              ))
-        ])
+                      Expanded(
+                          flex: 1,
+                          child: Column(
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Text(data['name'], maxLines: 2, overflow: TextOverflow.ellipsis),
+                                Text('库存:'+data['stock'], softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black54)),
+                                Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: <Widget>[
+                                      Text('￥' + data['nowPrice'].toString(),
+                                          softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.red)),
+                                      Text(data['totalSales']+'人购买',
+                                          softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.black87))
+                                    ]
+                                )
+                              ]
+                          )
+                      )
+                    ]
+                ))
+          ])
+      ),
     );
   }
 

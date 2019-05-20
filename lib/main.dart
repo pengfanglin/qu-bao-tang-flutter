@@ -35,6 +35,7 @@ class TableMenuState extends State<TableMenu> {
     _currentIndex=0;
     _controller=PageController(initialPage: 0);
     _pages=List<Widget>()..add(Home())..add(ShopCar())..add(Order())..add(Find())..add(My());
+    Application.bottomBarController=_controller;
   }
 
   @override

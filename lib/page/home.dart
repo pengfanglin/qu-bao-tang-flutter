@@ -216,7 +216,7 @@ class GoodsClassState extends State<GoodsClass> {
           crossAxisCount: 5, //每行5个
           mainAxisSpacing: 5, //主轴方向间距
           crossAxisSpacing: 10, //水平方向间距
-          childAspectRatio: 1 / 1.3
+          childAspectRatio: 1 / 1.25
         ),
         children: list,
       ),

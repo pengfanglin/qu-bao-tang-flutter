@@ -53,6 +53,7 @@ class MyWebViewState extends State<WebView>{
 
   @override
   Widget build(BuildContext context) {
+    print(widget.url);
     List<Widget> titleContent = [];
     if (widget.full&&loading) {
       // 如果还在加载中，就在标题栏上显示一个圆形进度条

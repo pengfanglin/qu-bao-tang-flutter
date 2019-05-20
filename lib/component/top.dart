@@ -23,11 +23,13 @@ class Top extends StatelessWidget {
                 },
                 child: Icon(Icons.arrow_back_ios, color: Colors.white, size: 25)),
             Expanded(
-                flex: 1,
-                child: title == null
-                    ? Text('')
-                    : Text(title, softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 18))),
-            right==null?Container():right
+              flex: 1,
+              child: Center(
+                  child: title == null
+                      ? Text('')
+                      : Text(title, softWrap: false, overflow: TextOverflow.ellipsis, style: TextStyle(color: Colors.white, fontSize: 18,decoration: TextDecoration.none))),
+            ),
+            right == null ? Container() : right
           ],
         ));
   }

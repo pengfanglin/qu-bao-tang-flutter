@@ -10,4 +10,6 @@ class Application{
 //  static const String STATIC_URL='http://192.168.0.110:8080/';
   ///全局上下文
   static String loadingImg='res/images/loading.gif';
+  //底部导航栏
+  static PageController bottomBarController;
 }
