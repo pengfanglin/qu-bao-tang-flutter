@@ -1,5 +1,6 @@
 import 'package:event_bus/event_bus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappbrowser/flutter_inappbrowser.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:qu_bao_tang/component/top.dart';
 import 'package:qu_bao_tang/component/widgets.dart';
@@ -20,6 +21,9 @@ class Goods extends StatefulWidget {
 
 class GoodsState extends State<Goods> {
   Map goods;
+  double _htmlHeight = 300;
+  static const String HANDLER_NAME = 'InAppWebView';
+  InAppWebViewController _controller;
 
   @override
   void initState() {
@@ -29,7 +33,7 @@ class GoodsState extends State<Goods> {
       'id': 0,
       'bannerImages': ['res/images/loading.gif'],
       'name': '加载中',
-      'infoUrl':'',
+      'infoUrl': '',
       'img': 'res/images/loading.gif',
       'nowPrice': '0~0',
       'totalSales': 0,
@@ -43,9 +47,7 @@ class GoodsState extends State<Goods> {
     };
     Api.post<dynamic>('goods/goodsDetail', params: {"id": widget.id}).then((data) {
       goods = data;
-      setState(() {
-        banner();
-      });
+      setState(() {});
     }, onError: (e) {
       ToastUtils.show(e.toString());
     });
@@ -55,6 +57,8 @@ class GoodsState extends State<Goods> {
   void dispose() {
     super.dispose();
     eventBus.destroy();
+    _controller?.removeJavaScriptHandler(HANDLER_NAME);
+    _controller = null;
   }
 
   @override
@@ -75,22 +79,25 @@ class GoodsState extends State<Goods> {
                     ));
                   },
                   child: Icon(Icons.shopping_cart, color: Colors.white, size: 25))),
-          Expanded(flex: 1, child: ListView(shrinkWrap: true, children: <Widget>[Container(height: 300, child: banner()), goodsInfo()])),
+          Expanded(flex: 1, child: ListView(shrinkWrap: true, children: <Widget>[banner(), goodsInfo(), urlInfo()])),
           bottom()
         ]))));
   }
 
   Widget banner() {
     List<String> bannerImages = goods['bannerImages'].toString().split(',');
-    return Swiper(
-        itemBuilder: (context, index) {
-          return ImgCache(goods['id'] == 0 ? '' : Application.STATIC_URL + bannerImages[index]);
-        },
-        itemCount: bannerImages.length,
-        pagination: SwiperPagination(builder: DotSwiperPaginationBuilder(color: Colors.white, activeColor: Colors.red)),
-        scrollDirection: Axis.horizontal,
-        autoplay: true,
-        autoplayDelay: 2000);
+    return Container(
+      height: 300,
+      child: Swiper(
+          itemBuilder: (context, index) {
+            return ImgCache(goods['id'] == 0 ? '' : Application.STATIC_URL + bannerImages[index]);
+          },
+          itemCount: bannerImages.length,
+          pagination: SwiperPagination(builder: DotSwiperPaginationBuilder(color: Colors.white, activeColor: Colors.red)),
+          scrollDirection: Axis.horizontal,
+          autoplay: true,
+          autoplayDelay: 2000),
+    );
   }
 
   Widget goodsInfo() {
@@ -175,10 +182,7 @@ class GoodsState extends State<Goods> {
 
   Widget bottom() {
     return Container(
-      decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border(top: BorderSide(color: Colors.black12))
-      ),
+      decoration: BoxDecoration(color: Colors.white, border: Border(top: BorderSide(color: Colors.black12))),
       height: 55,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -202,29 +206,62 @@ class GoodsState extends State<Goods> {
             child: Container(
               margin: EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
-                color: Color(0xFF409EFF),
-                borderRadius: BorderRadius.only(topLeft: Radius.circular(20),bottomLeft: Radius.circular(20))
-              ),
+                  color: Color(0xFF409EFF), borderRadius: BorderRadius.only(topLeft: Radius.circular(20), bottomLeft: Radius.circular(20))),
               child: Center(
-                child: Text('加入购物车', style: TextStyle(color: Colors.white,fontSize: 16)),
+                child: Text('加入购物车', style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ),
           ),
           Expanded(
             flex: 2,
             child: Container(
-              margin: EdgeInsets.only(top: 5,bottom: 5,right: 10),
+              margin: EdgeInsets.only(top: 5, bottom: 5, right: 10),
               decoration: BoxDecoration(
-                  color: Color(0xFFE6A23C),
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(20),bottomRight: Radius.circular(20))
-              ),
+                  color: Color(0xFFE6A23C), borderRadius: BorderRadius.only(topRight: Radius.circular(20), bottomRight: Radius.circular(20))),
               child: Center(
-                child: Text('立即购买', style: TextStyle(color: Colors.white,fontSize: 16)),
+                child: Text('立即购买', style: TextStyle(color: Colors.white, fontSize: 16)),
               ),
             ),
           )
         ],
       ),
     );
+  }
+
+  Widget urlInfo() {
+    return goods['infoUrl'] == ''
+        ? null
+        : Container(
+            height: _htmlHeight,
+            child: InAppWebView(
+                initialUrl: Application.STATIC_URL + goods['infoUrl'],
+                onWebViewCreated: (InAppWebViewController controller) {
+                  _controller = controller;
+                  _setJSHandler(_controller); // 设置js方法回掉, 拿到高度
+                },
+                onLoadError: (InAppWebViewController controller, String url, int code, String message) {
+                  print(code.toString() + ' ' + message);
+                },
+                onLoadStop: (InAppWebViewController controller, String url) {
+                  // 页面加载完成后注入js方法, 获取页面总高度
+                  controller.injectScriptCode("""
+                  window.flutter_inappbrowser.callHandler('InAppWebView', document.body.scrollHeight).then(function(result) {});
+                """);
+                }));
+  }
+
+  void _setJSHandler(InAppWebViewController controller) {
+    JavaScriptHandlerCallback callback = (List<dynamic> arguments) async {
+      if (arguments.length > 0) {
+        double height = double.parse(arguments[0].toString());
+        if (height > 0) {
+          setState(() {
+            print(height);
+            _htmlHeight = height;
+          });
+        }
+      }
+    };
+    controller.addJavaScriptHandler(HANDLER_NAME, callback);
   }
 }

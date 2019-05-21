@@ -1,7 +1,6 @@
-import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import "package:flutter_inappbrowser/flutter_inappbrowser.dart";
 import 'package:qu_bao_tang/utils/application.dart';
 
 class WebView extends StatefulWidget{
@@ -17,58 +16,39 @@ class WebView extends StatefulWidget{
 class MyWebViewState extends State<WebView>{
   // 标记是否是加载中
   bool loading = true;
-  GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
-  // WebView加载状态变化监听器
-  StreamSubscription<WebViewStateChanged> stateChanged;
-  // 插件提供的对象，该对象用于WebView的各种操作
-  FlutterWebviewPlugin flutterWebViewPlugin = FlutterWebviewPlugin();
+  InAppWebViewController webView;
+  double progress = 0;
 
   @override
   void initState() {
     super.initState();
-    stateChanged = flutterWebViewPlugin.onStateChanged.listen((WebViewStateChanged state){
-      switch (state.type) {
-        case WebViewState.shouldStart:
-        // 准备加载
-          setState(() {
-            loading = true;
-          });
-          break;
-        case WebViewState.startLoad:
-        // 开始加载
-          break;
-        case WebViewState.finishLoad:
-        // 加载完成
-          setState(() {
-            loading = false;
-          });
-          break;
-        case WebViewState.abortLoad:
-          print('终止加载');
-          //终止加载
-          break;
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
-    print(widget.url);
+    String _url=widget.url;
     List<Widget> titleContent = [];
-    if (widget.full&&loading) {
+
+    if (!widget.full&&progress<1) {
       // 如果还在加载中，就在标题栏上显示一个圆形进度条
       titleContent.add(CupertinoActivityIndicator());
     }
     if(!widget.full&&widget.title!=null){
       titleContent.add(Text(widget.title,style: TextStyle(color: Colors.white)));
     }
-    return WebviewScaffold(
-      key: scaffoldKey,
-      url:widget.url,
+    return Scaffold(
       appBar: widget.full?null:AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
+            GestureDetector(
+              onTap: (){
+                if(Navigator.of(context).canPop()){
+                  Navigator.of(context).pop();
+                }
+              },
+              child: Icon(Icons.arrow_back,color: Colors.white,size: 25),
+            ),
             Expanded(
               flex: 1,
               child: Row(
@@ -79,7 +59,7 @@ class MyWebViewState extends State<WebView>{
             ),
             GestureDetector(
               onTap: (){
-                flutterWebViewPlugin.reload();
+                webView.reload();
               },
               child: Icon(Icons.refresh,color: Colors.white,size: 25)
             )
@@ -88,19 +68,37 @@ class MyWebViewState extends State<WebView>{
         backgroundColor: Application.themeColor,
         iconTheme: IconThemeData(color: Colors.white)
       ),
-      //禁止网页缩放
-      withZoom: false,
-      //允许LocalStorage
-      withLocalStorage: true,
-      //允许执行js代码
-      withJavascript: true
+      body: Container(
+        child: Column(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                child: InAppWebView(
+                  initialUrl: _url,
+                  onWebViewCreated: (InAppWebViewController controller) {
+                    webView = controller;
+                  },
+                  onLoadStart: (InAppWebViewController controller, String url) {
+                    setState(() {
+                      _url = url;
+                    });
+                  },
+                  onProgressChanged: (InAppWebViewController controller, int progress) {
+                    setState(() {
+                      this.progress = progress/100;
+                    });
+                  },
+                ),
+              ),
+            )
+          ].where((Object o) => o != null).toList(),
+        ),
+      )
     );
   }
 
   @override
   void dispose() {
-    stateChanged.cancel();
-    flutterWebViewPlugin.dispose();
     super.dispose();
   }
 }
